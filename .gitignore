@@ -1,0 +1,7 @@
+**/__pycache__/**
+**/node_modules/
+venv
+htmlcov/
+frontend/static
+**/templates/frontend/**
+frontend/package-lock.json
