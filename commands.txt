@@ -4,6 +4,7 @@ python manage.py runserver
 python manage.py createsuperuser
 pip install coverage
 pip install django-cors-headers
-pip install django
+pip install django        
+pip install djangorestframework-simplejwt        
 coverage run --omit='*/venv/*' manage.py test
 coverage html
