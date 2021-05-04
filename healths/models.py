@@ -1,6 +1,6 @@
 from django.db import models
-from django.contrib.auth.models import User
 from django.utils import timezone
+from django.conf import settings
 
 OPTION_YES = 'SI',
 OPTION_NO = 'NO'
@@ -30,7 +30,7 @@ class Health(models.Model):
   q11 = models.CharField(max_length=2, choices=TypeOfResponse.choices, default=TypeOfResponse.NO)
   q12 = models.CharField(max_length=2, choices=TypeOfResponse.choices, default=TypeOfResponse.NO)
   q12_detail = models.CharField(max_length=200)
-  owner = models.ForeignKey(User, on_delete=models.CASCADE, related_name="healths")
+  owner = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="healths")
   fit = models.BooleanField(default=False)
   created_at = models.DateTimeField(default=timezone.now)
   objects = models.Manager() # default manager

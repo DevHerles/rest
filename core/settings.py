@@ -45,6 +45,7 @@ INSTALLED_APPS = [
     # 'partners_api',
     'rest_framework',
     'corsheaders',
+    'users',
 ]
 
 MIDDLEWARE = [
@@ -153,3 +154,6 @@ CORS_ALLOWED_ORIGINS = [
     'http://localhost:3000',
     'http://10.11.36.185:3000',
 ]
+
+# Custom user model
+AUTH_USER_MODEL = 'users.NewUser'
