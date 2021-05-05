@@ -38,16 +38,12 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    'rest_framework_simplejwt.token_blacklist',
     'healths',
-    # 'healths_api',
-    'symptoms',
-    # 'symptoms_api',
-    'partners',
-    # 'partners_api',
+    'healths_api',
     'rest_framework',
     'corsheaders',
     'users',
+    'rest_framework_simplejwt.token_blacklist',
 ]
 
 MIDDLEWARE = [
