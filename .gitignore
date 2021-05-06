@@ -1,5 +1,6 @@
 **/__pycache__/**
 **/node_modules/
+.vim/
 venv
 htmlcov/
 frontend/static
