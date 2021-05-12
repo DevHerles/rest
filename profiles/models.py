@@ -4,7 +4,7 @@ from users.models import NewUser
 # Create your models here.
 
 
-class Bars(models.Model):
+class Bar(models.Model):
     class BarsPosition(models.TextChoices):
         LEFT = 'left', _('Left')
         RIGHT = 'right', _('Right')
@@ -18,44 +18,65 @@ class Bars(models.Model):
                                 default=BarsPosition.LEFT)
     style = models.CharField(max_length=10)
 
+    def __str__(self):
+        return self.position
 
-class Configs(models.Model):
+class Config(models.Model):
     scroll = models.CharField(max_length=10, default='content')
-    navbar = models.ForeignKey(Bars,
+    navbar = models.ForeignKey(Bar,
                                on_delete=models.CASCADE,
                                null=False,
                                related_name='config_navbar')
-    toolbar = models.ForeignKey(Bars,
+    toolbar = models.ForeignKey(Bar,
                                 on_delete=models.CASCADE,
                                 null=False,
                                 related_name='config_toolbar')
-    footer = models.ForeignKey(Bars,
+    footer = models.ForeignKey(Bar,
                                on_delete=models.CASCADE,
                                null=False,
                                related_name='config_footer')
     mode = models.CharField(max_length=20, default='fullwidth')
 
+    def __str__(self):
+        return self.navbar.position
 
-class Layouts(models.Model):
+
+class Layout(models.Model):
     style = models.CharField(max_length=10, default='style1')
-    config = models.ForeignKey(Configs, on_delete=models.CASCADE, null=False)
+    config = models.ForeignKey(Config, on_delete=models.CASCADE, null=False)
+
+    def __str__(self):
+        return self.style
 
 
-class Themes(models.Model):
+class Theme(models.Model):
     main = models.CharField(max_length=15, default='default', null=False)
     navbar = models.CharField(max_length=15, default='defaultDark', null=False)
     toolbar = models.CharField(max_length=15, default='default', null=False)
     footer = models.CharField(max_length=15, default='default', null=False)
 
+    def __str__(self):
+        return self.main
 
-class Settings(models.Model):
-    layout = models.ForeignKey(Layouts, on_delete=models.CASCADE, null=False)
+
+class Setting(models.Model):
+    layout = models.ForeignKey(Layout, on_delete=models.CASCADE, null=False)
     custom_scrollbars = models.BooleanField(default=True)
-    theme = models.ForeignKey(Themes, on_delete=models.CASCADE, null=False)
+    theme = models.ForeignKey(Theme, on_delete=models.CASCADE, null=False)
+
+    def __str__(self):
+        return self.theme.main
+
+    class Meta:
+        verbose_name = 'Congifuración'
+        verbose_name_plural = 'Configuraciones'
 
 
-class Profiles(models.Model):
+class Profile(models.Model):
     user = models.ForeignKey(NewUser, on_delete=models.CASCADE, null=False)
-    settings = models.ForeignKey(Settings,
+    settings = models.ForeignKey(Setting,
                                  on_delete=models.CASCADE,
                                  null=False)
+
+    def __str__(self):
+        return self.user.user_name
