@@ -13,3 +13,17 @@ $ python3 manage.py createsuperuser
 ```
 $ python3 manage.py runserver
 ```
+
+# 2. Add apps (users)
+
+With `manage.py`:
+
+```
+$ python3 manage.py startapp users
+```
+
+Or with `django-admin`:
+
+```
+$ django-admin startapp users
+```
