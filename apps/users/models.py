@@ -2,6 +2,8 @@ from django.db import models
 from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, PermissionsMixin
 from simple_history.models import HistoricalRecords
 
+from apps.partners.models import Partner
+
 
 class UserManager(BaseUserManager):
     def _create_user(self, username, email, name, last_name, password,
@@ -55,6 +57,11 @@ class User(AbstractBaseUser, PermissionsMixin):
                               max_length=255,
                               null=True,
                               blank=True)
+
+    partner_id = models.ForeignKey(Partner,
+                                   on_delete=models.CASCADE,
+                                   null=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
     historical = HistoricalRecords()

@@ -26,9 +26,11 @@ BASE_APPS = [
 ]
 
 LOCAL_APPS = [
+    'apps.base',
     'apps.common',
     'apps.settings',
     'apps.users',
+    'apps.partners',
     'apps.healths',
     'apps.symptoms',
 ]
@@ -36,6 +38,7 @@ LOCAL_APPS = [
 THIRD_APPS = [
     'rest_framework',
     'simple_history',
+    'drf_yasg',
 ]
 
 INSTALLED_APPS = BASE_APPS + LOCAL_APPS + THIRD_APPS
