@@ -1,16 +1,15 @@
-from rest_framework import generics
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, DjangoModelPermissions
-from apps.partners.api.serializers.partners_api_serializers import (
-    PartnerSerializer, )
+from apps.symptoms.api.serializers import (
+    SymptomSerializer, SymptomListSerializer)
 
 from apps.users.permissions import IsOwner
 
-class PartnerViewSet(viewsets.ModelViewSet):
-    serializer_class = PartnerSerializer
-    permission_classes = [IsAdminUser]
+class SymptomViewSet(viewsets.ModelViewSet):
+    serializer_class = SymptomSerializer
+    permission_classes = [DjangoModelPermissions, IsOwner]
 
     def get_queryset(self, pk=None):
         if pk is None:
@@ -20,9 +19,9 @@ class PartnerViewSet(viewsets.ModelViewSet):
                 id=pk, active=True).first()
 
     def list(self, request):
-        partner_serializer = self.get_serializer(self.get_queryset(),
+        symptom_serializer = self.get_serializer(self.get_queryset(),
                                                  many=True)
-        return Response(partner_serializer.data, status=status.HTTP_200_OK)
+        return Response(symptom_serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
@@ -34,12 +33,12 @@ class PartnerViewSet(viewsets.ModelViewSet):
 
     def update(self, request, pk=None):
         if self.get_queryset(pk):
-            partner_serializer = self.serializer_class(self.get_queryset(pk),
+            symptom_serializer = self.serializer_class(self.get_queryset(pk),
                                                        data=request.data)
 
-            if partner_serializer.is_valid():
-                partner_serializer.save()
-                return Response(partner_serializer.data,
+            if symptom_serializer.is_valid():
+                symptom_serializer.save()
+                return Response(symptom_serializer.data,
                                 status=status.HTTP_200_OK)
         return Response({'message': 'Partner no existe'},
                         status=status.HTTP_400_BAD_REQUEST)
