@@ -48,7 +48,11 @@ class User(AbstractBaseUser, PermissionsMixin):
         unique=True,
     )
     name = models.CharField('Nombres', max_length=255, blank=True, null=True)
-    last_name = models.CharField('Apellidos',
+    first_name = models.CharField('Apellido Paterno',
+                                  max_length=255,
+                                  blank=True,
+                                  null=True)
+    last_name = models.CharField('Apellido Materno',
                                  max_length=255,
                                  blank=True,
                                  null=True)
