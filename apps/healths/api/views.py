@@ -20,7 +20,7 @@ def healths_api_view(request):
         # validation
         if health_serializer.is_valid():
             health_serializer.save()
-            return Response({'message': 'Registro creado correctamente!'},
+            return Response({'message': 'DJ Salud creado correctamente!'},
                             status=status.HTTP_201_CREATED)
 
         return Response(health_serializer.errors,

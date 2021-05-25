@@ -56,10 +56,11 @@ class Health(BaseModel):
                            choices=TypeOfResponse.choices,
                            default=TypeOfResponse.NO)
     q12_detail = models.CharField(max_length=200, blank=True, null=True)
-    partner_id = models.ForeignKey(Partner,
-                                   on_delete=models.CASCADE,
-                                   related_name="healths",
-                                   null=True)
+    partner = models.ForeignKey(
+        Partner,
+        on_delete=models.CASCADE,
+        related_name="healths",
+    )
     fit = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
     objects = models.Manager()  # default manager
@@ -78,5 +79,5 @@ class Health(BaseModel):
     class Meta:
         ordering = ('-created_at', )
 
-    def __str__(self):
-        return f'{self.partner_id.name} {self.partner_id.first_name} {self.partner_id.last_name}'
+    # def __str__(self):
+    # return f'{self.partner.name} {self.partner.first_name} {self.partner.last_name}'

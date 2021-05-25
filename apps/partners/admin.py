@@ -28,7 +28,7 @@ class OrganicUnitAdmin(admin.ModelAdmin):
 
 class PartnerAdmin(admin.ModelAdmin):
     list_display = ('id', 'name', 'first_name', 'last_name', 'doc_type',
-                    'doc_number', 'email', 'user_id', 'active')
+                    'doc_number', 'email', 'owner', 'is_active')
 
 
 admin.site.register(Partner, PartnerAdmin)

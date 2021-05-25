@@ -58,7 +58,7 @@ class SettingSerializer(serializers.ModelSerializer):
                     "role": "admin",
                     "uuid": instance.owner.id,
                     "roles": ["admin"],
-                    "partner_id": 1,
+                    "partner": 1,
                 }
             }
         }

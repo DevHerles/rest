@@ -7,7 +7,7 @@ class PartnerSerializer(serializers.ModelSerializer):
     class Meta:
         model = Partner
         exclude = (
-            'active',
+            'is_active',
             'created_date',
             'modified_date',
             'deleted_date',
@@ -25,10 +25,10 @@ class PartnerSerializer(serializers.ModelSerializer):
             'dob': instance.dob,
             'email': instance.email,
             'phone': instance.phone,
-            'organ_id': instance.organ_id.code or '',
-            'organic_unit_id': instance.organic_unit_id.code or '',
+            'organ': instance.organ.code if instance.organ else '',
+            'organic_unit': instance.organic_unit.code if instance.organic_unit else '',
             'functional_team': instance.functional_team,
             'position': instance.position,
-            'work_type_id': instance.work_type_id.code or '',
-            'user_id': instance.user_id.id
+            'work_type': instance.work_type.code if instance.work_type else '',
+            'owner': instance.owner.id
         }

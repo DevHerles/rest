@@ -77,29 +77,29 @@ class OrganicUnit(BaseModel):
 
 
 class Partner(BaseModel):
-    partner_type = models.CharField(max_length=255)
-    doc_number = models.CharField(max_length=255)
-    doc_type = models.CharField(max_length=255)
+    partner_type = models.CharField(max_length=255, blank=True, null=True)
+    doc_number = models.CharField(max_length=255, blank=True, null=True)
+    doc_type = models.CharField(max_length=255, blank=True, null=True)
     name = models.CharField(max_length=255)
-    first_name = models.CharField(max_length=255)
-    last_name = models.CharField(max_length=255)
-    dob = models.DateField()
+    first_name = models.CharField(max_length=255, blank=True, null=True)
+    last_name = models.CharField(max_length=255, blank=True, null=True)
+    dob = models.DateField(blank=True, null=True)
     email = models.EmailField()
-    phone = models.CharField(max_length=9)
-    organ_id = models.ForeignKey(Organ,
+    phone = models.CharField(max_length=9, blank=True, null=True)
+    organ = models.ForeignKey(Organ,
                                  on_delete=models.CASCADE,
-                                 related_name='partners')
-    organic_unit_id = models.ForeignKey(OrganicUnit,
+                                 related_name='partners', blank=True, null=True)
+    organic_unit = models.ForeignKey(OrganicUnit,
                                         on_delete=models.CASCADE,
-                                        related_name='partners')
-    functional_team = models.CharField(max_length=255)
-    position = models.CharField(max_length=255)
-    work_type_id = models.ForeignKey(WorkType,
+                                        related_name='partners', blank=True, null=True)
+    functional_team = models.CharField(max_length=255, blank=True, null=True)
+    position = models.CharField(max_length=255, blank=True, null=True)
+    work_type = models.ForeignKey(WorkType,
                                      on_delete=models.CASCADE,
-                                     related_name='partners')
-    user_id = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                on_delete=models.CASCADE,
-                                related_name='partners')
+                                     related_name='partners', blank=True, null=True)
+    owner = models.ForeignKey(settings.AUTH_USER_MODEL,
+                                     on_delete=models.CASCADE,
+                                     related_name='partners', blank=True, null=True)
     historical = HistoricalRecords()
 
     @property

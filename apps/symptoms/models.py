@@ -34,11 +34,15 @@ class Symptom(BaseModel):
     q5 = models.CharField(max_length=2,
                           choices=TypeOfResponse.choices,
                           default=TypeOfResponse.NO)
-    q5_detail = models.CharField(max_length=200, blank=True, null=True)
-    partner_id = models.ForeignKey(Partner,
-                                   on_delete=models.CASCADE,
-                                   related_name="symptoms",
-                                   null=True)
+    q6 = models.CharField(max_length=2,
+                          choices=TypeOfResponse.choices,
+                          default=TypeOfResponse.NO)
+    q6_detail = models.CharField(max_length=200, blank=True, null=True)
+    partner = models.ForeignKey(
+        Partner,
+        on_delete=models.CASCADE,
+        related_name="symptoms",
+    )
     fit = models.BooleanField(default=True)
     created_at = models.DateTimeField(default=timezone.now)
     objects = models.Manager()  # default manager
@@ -56,5 +60,5 @@ class Symptom(BaseModel):
     class Meta:
         ordering = ('-created_at', )
 
-    def __str__(self):
-        return f'{self.partner_id.name} {self.partner_id.first_name} {self.partner_id.last_name}'
+    # def __str__(self):
+    # return f'{self.partner.name} {self.partner.first_name} {self.partner.last_name}'

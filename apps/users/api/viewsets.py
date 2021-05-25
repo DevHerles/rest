@@ -5,7 +5,7 @@ from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, DjangoModelPermissions, AllowAny
 from apps.users.api.serializers import (
     CustomUserSerializer as UserSerializer, )
-
+from apps.partners.models import Partner
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
@@ -26,8 +26,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def create(self, request):
         serializer = self.serializer_class(data=request.data)
         if serializer.is_valid():
-            serializer.save()
-            return Response({'message': 'Usuario creado'},
+            user = serializer.save()
+            Partner(owner=user, email=user.email, name=user.username).save()
+            return Response(serializer.data,
                             status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 

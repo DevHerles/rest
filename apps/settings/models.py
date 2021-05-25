@@ -1,9 +1,10 @@
 from django.db import models
 from django.conf import settings
 from django.utils import timezone
+from apps.base.models import BaseModel
 
 
-class Setting(models.Model):
+class Setting(BaseModel):
     layout_style = models.CharField(max_length=255, default='layout1')
     layout_config_scroll = models.CharField(max_length=255, default='content')
     layout_config_navbar_position = models.CharField(max_length=255,
@@ -26,11 +27,6 @@ class Setting(models.Model):
     theme_navbar = models.CharField(max_length=255, default='defaultDark')
     theme_toolbar = models.CharField(max_length=255, default='default')
     theme_footer = models.CharField(max_length=255, default='default')
-    owner = models.ForeignKey(
-        settings.AUTH_USER_MODEL,
-        on_delete=models.CASCADE,
-        related_name='settings',
-    )
     created_at = models.DateTimeField(default=timezone.now)
     objects = models.Manager()  # default manager
 

@@ -1,17 +1,16 @@
-from rest_framework import generics
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import IsAdminUser, DjangoModelPermissions, IsAuthenticated
-from apps.partners.api.serializers.partners_api_serializers import (
-    PartnerSerializer, )
+from apps.settings.api.serializers import (
+    SettingSerializer, )
 
 from apps.users.permissions import IsOwner
 
 
-class PartnerViewSet(viewsets.ModelViewSet):
-    serializer_class = PartnerSerializer
-    # permission_classes = [IsAuthenticated, IsOwner]
+class SettingViewSet(viewsets.ModelViewSet):
+    serializer_class = SettingSerializer
+    permission_classes = [IsAuthenticated, IsOwner]
 
     def get_queryset(self, pk=None):
         if pk is None:
@@ -26,7 +25,9 @@ class PartnerViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         data = request.data
-        data['user'] = request.user.id
+        data['owner'] = request.user.id
+        data['partner'] = request.user.partner
+        print(request.user)
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             serializer.save()
@@ -41,7 +42,7 @@ class PartnerViewSet(viewsets.ModelViewSet):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response({'message': 'Partner no existe'},
+        return Response({'message': 'Settings no existe'},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
@@ -51,5 +52,5 @@ class PartnerViewSet(viewsets.ModelViewSet):
             instance.save()
             return Response({'message': 'Eliminado correctamente'},
                             status=status.HTTP_200_OK)
-        return Response({'message': 'Partner no existe'},
+        return Response({'message': 'Settings no existe'},
                         status=status.HTTP_400_BAD_REQUEST)

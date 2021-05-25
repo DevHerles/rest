@@ -20,7 +20,7 @@ def settings_api_view(request):
         # validation
         if setting_serializer.is_valid():
             setting_serializer.save()
-            return Response({'message': 'Registro creado correctamente!'},
+            return Response({'message': 'Setting creado correctamente!'},
                             status=status.HTTP_201_CREATED)
 
         return Response(setting_serializer.errors,

@@ -6,7 +6,7 @@ class OrganSerializer(serializers.ModelSerializer):
     class Meta:
         model = Organ
         exclude = (
-            'active',
+            'is_active',
             'created_date',
             'modified_date',
             'deleted_date',
@@ -17,7 +17,7 @@ class OrganicUnitSerializer(serializers.ModelSerializer):
     class Meta:
         model = OrganicUnit
         exclude = (
-            'active',
+            'is_active',
             'created_date',
             'modified_date',
             'deleted_date',
@@ -28,7 +28,7 @@ class WorkTypeSerializer(serializers.ModelSerializer):
     class Meta:
         model = WorkType
         exclude = (
-            'active',
+            'is_active',
             'created_date',
             'modified_date',
             'deleted_date',

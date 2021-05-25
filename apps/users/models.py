@@ -3,7 +3,7 @@ from django.contrib.auth.models import BaseUserManager, AbstractBaseUser, Permis
 from simple_history.models import HistoricalRecords
 
 from apps.partners.models import Partner
-
+from apps.base.models import BaseModel
 
 class UserManager(BaseUserManager):
     def _create_user(self, username, email, name, last_name, password,
@@ -40,7 +40,7 @@ class UserManager(BaseUserManager):
                                  True, True, **wkargs)
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, BaseModel, PermissionsMixin):
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(
         'Correo Electrónico',
@@ -62,7 +62,7 @@ class User(AbstractBaseUser, PermissionsMixin):
                               null=True,
                               blank=True)
 
-    partner_id = models.ForeignKey(Partner,
+    partner = models.ForeignKey(Partner,
                                    on_delete=models.CASCADE,
                                    null=True)
 
