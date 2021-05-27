@@ -2,14 +2,17 @@ from rest_framework import generics
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, DjangoModelPermissions, AllowAny
+from rest_framework.permissions import (IsAdminUser, DjangoModelPermissions,
+                                        AllowAny, IsAuthenticated)
 from apps.users.api.serializers import (
     CustomUserSerializer as UserSerializer, )
 from apps.partners.models import Partner
+from apps.users.permissions import IsOwner
+
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    permission_classes = [AllowAny]
+    permission_classes = [IsAuthenticated, IsOwner]
 
     def get_queryset(self, pk=None):
         if pk is None:
@@ -28,8 +31,7 @@ class UserViewSet(viewsets.ModelViewSet):
         if serializer.is_valid():
             user = serializer.save()
             Partner(owner=user, email=user.email, name=user.username).save()
-            return Response(serializer.data,
-                            status=status.HTTP_201_CREATED)
+            return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):

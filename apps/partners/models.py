@@ -87,19 +87,27 @@ class Partner(BaseModel):
     email = models.EmailField()
     phone = models.CharField(max_length=9, blank=True, null=True)
     organ = models.ForeignKey(Organ,
-                                 on_delete=models.CASCADE,
-                                 related_name='partners', blank=True, null=True)
+                              on_delete=models.CASCADE,
+                              related_name='partners',
+                              blank=True,
+                              null=True)
     organic_unit = models.ForeignKey(OrganicUnit,
-                                        on_delete=models.CASCADE,
-                                        related_name='partners', blank=True, null=True)
+                                     on_delete=models.CASCADE,
+                                     related_name='partners',
+                                     blank=True,
+                                     null=True)
     functional_team = models.CharField(max_length=255, blank=True, null=True)
     position = models.CharField(max_length=255, blank=True, null=True)
     work_type = models.ForeignKey(WorkType,
-                                     on_delete=models.CASCADE,
-                                     related_name='partners', blank=True, null=True)
+                                  on_delete=models.CASCADE,
+                                  related_name='partners',
+                                  blank=True,
+                                  null=True)
     owner = models.ForeignKey(settings.AUTH_USER_MODEL,
-                                     on_delete=models.CASCADE,
-                                     related_name='partners', blank=True, null=True)
+                              on_delete=models.CASCADE,
+                              related_name='partners',
+                              blank=True,
+                              null=True)
     historical = HistoricalRecords()
 
     @property

@@ -1,5 +1,6 @@
 from rest_framework import serializers
 from apps.users.models import User
+from apps.partners.models import Partner
 
 
 class EmailAndPasswordUserSerializer(serializers.ModelSerializer):
@@ -32,11 +33,15 @@ class CustomUserSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         password = validated_data.pop('password', None)
-        user = self.Meta.model(**validated_data)
+        instance = self.Meta.model(**validated_data)
         if password is not None:
-            user.set_password(password)
-        user.save()
-        return user
+            instance.set_password(password)
+        instance.save()
+        partner = Partner(email=instance.email,
+                          name=instance.username,
+                          owner=instance)
+        partner.save()
+        return instance
 
 
 class UserTokenSerializer(serializers.ModelSerializer):

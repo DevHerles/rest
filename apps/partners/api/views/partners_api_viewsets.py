@@ -11,11 +11,12 @@ from apps.users.permissions import IsOwner
 
 class PartnerViewSet(viewsets.ModelViewSet):
     serializer_class = PartnerSerializer
-    # permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated, IsOwner]
 
     def get_queryset(self, pk=None):
         if pk is None:
-            return self.get_serializer().Meta.model.objects.filter(is_active=True)
+            return self.get_serializer().Meta.model.objects.filter(
+                is_active=True)
         else:
             return self.get_serializer().Meta.model.objects.filter(
                 id=pk, is_active=True).first()

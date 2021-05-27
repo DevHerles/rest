@@ -6,6 +6,8 @@ from apps.symptoms.api.serializers import (
     SymptomSerializer, )
 
 from apps.users.permissions import IsOwner
+from apps.users.models import User
+from apps.healths.models import Health
 
 
 class SymptomViewSet(viewsets.ModelViewSet):
@@ -14,7 +16,8 @@ class SymptomViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self, pk=None):
         if pk is None:
-            return self.get_serializer().Meta.model.objects.filter(is_active=True)
+            return self.get_serializer().Meta.model.objects.filter(
+                is_active=True)
         else:
             return self.get_serializer().Meta.model.objects.filter(
                 id=pk, is_active=True).first()
@@ -25,8 +28,17 @@ class SymptomViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         data = request.data
-        data['owner'] = request.user.id
-        data['partner'] = request.user.partner
+        user = User.objects.filter(pk=request.user.id).first()
+        health = Health.objects.filter(owner=user).first()
+        if not health.fit:
+            return Response(
+                {
+                    'detail':
+                    'Su declaración jurada de salud no es apto. No puede continuar.'
+                },
+                status=status.HTTP_400_BAD_REQUEST)
+        data['owner'] = user.id
+        data['partner'] = user.partner.id
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             serializer.save()

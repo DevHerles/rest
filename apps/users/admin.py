@@ -25,6 +25,9 @@ class UserAdminConfig(UserAdmin):
         ('Permissions', {
             'fields': ('is_staff', 'is_active')
         }),
+        ('Partner', {
+            'fields': ('partner', 'owner')
+        }),
     )
 
 
