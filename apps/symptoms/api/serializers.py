@@ -4,6 +4,22 @@ from apps.healths.models import TypeOfResponse
 from apps.partners.api.serializers.partners_api_serializers import PartnerAffidavitSerializer
 
 
+class SymptomCreateSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Symptom
+        fields = '__all__'
+
+    def create(self, validated_data):
+        symptom = Symptom(**validated_data)
+        print(validated_data)
+        for key in validated_data:
+            if validated_data[key] == TypeOfResponse.YES:
+                symptom.fit = False
+                break
+        symptom.save()
+        return symptom
+
+
 class SymptomSerializer(serializers.ModelSerializer):
     partner = PartnerAffidavitSerializer()
 

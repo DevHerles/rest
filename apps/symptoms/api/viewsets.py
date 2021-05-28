@@ -1,9 +1,10 @@
 from rest_framework import status
 from rest_framework import viewsets
 from rest_framework.response import Response
-from rest_framework.permissions import IsAdminUser, DjangoModelPermissions, IsAuthenticated
-from apps.symptoms.api.serializers import (
-    SymptomSerializer, )
+from rest_framework.permissions import (IsAdminUser, DjangoModelPermissions,
+                                        IsAuthenticated)
+from apps.symptoms.api.serializers import (SymptomSerializer,
+                                           SymptomCreateSerializer)
 
 from apps.users.permissions import IsOwnerOrAdminUser
 from apps.users.models import User
@@ -28,6 +29,7 @@ class SymptomViewSet(viewsets.ModelViewSet):
 
     def create(self, request):
         data = request.data
+        _id = data.pop('_id', None)
         user = User.objects.filter(pk=request.user.id).first()
         health = Health.objects.filter(owner=user).first()
         if not health.fit:
@@ -39,11 +41,14 @@ class SymptomViewSet(viewsets.ModelViewSet):
                 status=status.HTTP_400_BAD_REQUEST)
         data['owner'] = user.id
         data['partner'] = user.partner.id
-        serializer = self.serializer_class(data=data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+        write_serializer = SymptomCreateSerializer(data=data)
+        if write_serializer.is_valid():
+            instance = write_serializer.save()
+            read_serializer = self.serializer_class(instance)
+            return Response(read_serializer.data,
+                            status=status.HTTP_201_CREATED)
+        return Response(write_serializer.errors,
+                        status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
         if self.get_queryset(pk):
@@ -61,7 +66,7 @@ class SymptomViewSet(viewsets.ModelViewSet):
         if instance:
             instance.is_active = False
             instance.save()
-            return Response({'detail': 'Eliminado correctamente'},
+            return Response({'message': 'Eliminado correctamente'},
                             status=status.HTTP_200_OK)
-        return Response({'detail': 'DJ de Síntoma no existe'},
+        return Response({'message': 'DJ de Síntoma no existe'},
                         status=status.HTTP_400_BAD_REQUEST)
