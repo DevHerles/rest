@@ -1,9 +1,12 @@
 from rest_framework import serializers
 from apps.symptoms.models import Symptom
 from apps.healths.models import TypeOfResponse
+from apps.partners.api.serializers.partners_api_serializers import PartnerAffidavitSerializer
 
 
 class SymptomSerializer(serializers.ModelSerializer):
+    partner = PartnerAffidavitSerializer()
+
     class Meta:
         model = Symptom
         fields = '__all__'

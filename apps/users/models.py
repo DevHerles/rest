@@ -43,6 +43,7 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, BaseModel, PermissionsMixin):
+    groups = models.ForeignKey(Group, on_delete=models.CASCADE)
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(
         'Correo Electrónico',

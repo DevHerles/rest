@@ -5,13 +5,13 @@ from rest_framework.permissions import IsAdminUser, DjangoModelPermissions, IsAu
 from apps.healths.api.serializers import (
     HealthSerializer, )
 
-from apps.users.permissions import IsOwner
+from apps.users.permissions import IsOwnerOrAdminUser
 from apps.users.models import User
 
 
 class HealthViewSet(viewsets.ModelViewSet):
     serializer_class = HealthSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated, IsOwnerOrAdminUser]
 
     def get_queryset(self, pk=None):
         if pk is None:

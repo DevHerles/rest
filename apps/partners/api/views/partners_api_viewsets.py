@@ -6,12 +6,12 @@ from rest_framework.permissions import IsAdminUser, DjangoModelPermissions, IsAu
 from apps.partners.api.serializers.partners_api_serializers import (
     PartnerSerializer, )
 
-from apps.users.permissions import IsOwner
+from apps.users.permissions import IsOwnerOrAdminUser
 
 
 class PartnerViewSet(viewsets.ModelViewSet):
     serializer_class = PartnerSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self, pk=None):
         if pk is None:
@@ -21,7 +21,13 @@ class PartnerViewSet(viewsets.ModelViewSet):
             return self.get_serializer().Meta.model.objects.filter(
                 id=pk, is_active=True).first()
 
+    def retrieve(self, request, pk=None):
+        print('retrievexxxx' * 100, pk)
+        serializer = self.get_serializer(self.get_queryset(pk))
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def list(self, request):
+        print('list' * 100)
         serializer = self.get_serializer(self.get_queryset(), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 

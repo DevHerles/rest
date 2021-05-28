@@ -7,22 +7,37 @@ from rest_framework.permissions import (IsAdminUser, DjangoModelPermissions,
 from apps.users.api.serializers import (
     CustomUserSerializer as UserSerializer, )
 from apps.partners.models import Partner
-from apps.users.permissions import IsOwner
+from apps.users.permissions import (IsOwnerOrAdminUser, IsAdminUser,
+                                    IsLoggedInUserOrSuperAdmin,
+                                    IsAdminOrAnonymousUser)
 
 
 class UserViewSet(viewsets.ModelViewSet):
     serializer_class = UserSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
 
     def get_queryset(self, pk=None):
         if pk is None:
-            return self.get_serializer().Meta.model.objects.filter(
-                is_active=True)
+            if self.action == 'list':
+                if self.request.user.groups.name == 'admin':
+                    return self.get_serializer().Meta.model.objects.filter(
+                        is_active=True)
+                else:
+                    return self.get_serializer().Meta.model.objects.filter(
+                        is_active=True, owner=self.request.user)
         else:
-            return self.get_serializer().Meta.model.objects.filter(
-                id=pk, is_active=True).first()
+            if self.request.user.groups.name in ['admin', 'user']:
+                return self.get_serializer().Meta.model.objects.filter(
+                    id=pk, is_active=True).first()
+            else:
+                return Response(status=status.HTTP_402_NOT_ALLOWED)
+
+    def retrieve(self, request, pk=None):
+        print('retrieve' * 100, pk)
+        serializer = self.get_serializer(self.get_queryset(pk))
+        return Response(serializer.data, status=status.HTTP_200_OK)
 
     def list(self, request):
+        print('request=' * 30, request.user)
         serializer = self.get_serializer(self.get_queryset(), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
@@ -38,7 +53,6 @@ class UserViewSet(viewsets.ModelViewSet):
         if self.get_queryset(pk):
             serializer = self.serializer_class(self.get_queryset(pk),
                                                data=request.data)
-
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
@@ -54,3 +68,15 @@ class UserViewSet(viewsets.ModelViewSet):
                             status=status.HTTP_200_OK)
         return Response({'message': 'Usuario no existe'},
                         status=status.HTTP_400_BAD_REQUEST)
+
+    def get_permissions(self):
+        permission_classes = []
+        if self.action == 'create':
+            permission_classes = [IsAdminUser]
+        elif self.action == 'list':
+            permission_classes = [IsOwnerOrAdminUser]
+        elif self.action == 'retrieve' or self.action == 'update' or self.action == 'partial_update':
+            permission_classes = [IsOwnerOrAdminUser]
+        elif self.action == 'destroy':
+            permission_classes = [IsLoggedInUserOrSuperAdmin]
+        return [permission() for permission in permission_classes]

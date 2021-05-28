@@ -5,14 +5,14 @@ from rest_framework.permissions import IsAdminUser, DjangoModelPermissions, IsAu
 from apps.symptoms.api.serializers import (
     SymptomSerializer, )
 
-from apps.users.permissions import IsOwner
+from apps.users.permissions import IsOwnerOrAdminUser
 from apps.users.models import User
 from apps.healths.models import Health
 
 
 class SymptomViewSet(viewsets.ModelViewSet):
     serializer_class = SymptomSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated, IsOwnerOrAdminUser]
 
     def get_queryset(self, pk=None):
         if pk is None:
@@ -53,7 +53,7 @@ class SymptomViewSet(viewsets.ModelViewSet):
             if serializer.is_valid():
                 serializer.save()
                 return Response(serializer.data, status=status.HTTP_200_OK)
-        return Response({'message': 'DJ de Síntoma no existe'},
+        return Response({'detail': 'DJ de Síntoma no existe'},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
@@ -61,7 +61,7 @@ class SymptomViewSet(viewsets.ModelViewSet):
         if instance:
             instance.is_active = False
             instance.save()
-            return Response({'message': 'Eliminado correctamente'},
+            return Response({'detail': 'Eliminado correctamente'},
                             status=status.HTTP_200_OK)
-        return Response({'message': 'DJ de Síntoma no existe'},
+        return Response({'detail': 'DJ de Síntoma no existe'},
                         status=status.HTTP_400_BAD_REQUEST)

@@ -5,16 +5,17 @@ from rest_framework.permissions import IsAdminUser, DjangoModelPermissions, IsAu
 from apps.settings.api.serializers import (
     SettingSerializer, )
 
-from apps.users.permissions import IsOwner
+from apps.users.permissions import IsOwnerOrAdminUser
 
 
 class SettingViewSet(viewsets.ModelViewSet):
     serializer_class = SettingSerializer
-    permission_classes = [IsAuthenticated, IsOwner]
+    permission_classes = [IsAuthenticated, IsOwnerOrAdminUser]
 
     def get_queryset(self, pk=None):
         if pk is None:
-            return self.get_serializer().Meta.model.objects.filter(is_active=True)
+            return self.get_serializer().Meta.model.objects.filter(
+                is_active=True)
         else:
             return self.get_serializer().Meta.model.objects.filter(
                 id=pk, is_active=True).first()

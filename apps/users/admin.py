@@ -10,6 +10,7 @@ class UserAdminConfig(UserAdmin):
         'username',
         'first_name',
     )
+    filter_horizontal = ('groups', )
     list_filter = ('email', 'username', 'first_name', 'is_active', 'is_staff')
     ordering = ('id', )
     list_display = ('id', 'email', 'username', 'first_name', 'is_active',
@@ -31,4 +32,4 @@ class UserAdminConfig(UserAdmin):
     )
 
 
-admin.site.register(User, UserAdminConfig)
+admin.site.register(User, )

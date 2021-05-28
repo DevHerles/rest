@@ -1,9 +1,12 @@
 from rest_framework import serializers
 from apps.healths.models import Health
 from apps.healths.models import TypeOfResponse
+from apps.partners.api.serializers.partners_api_serializers import PartnerAffidavitSerializer
 
 
 class HealthSerializer(serializers.ModelSerializer):
+    partner = PartnerAffidavitSerializer()
+
     class Meta:
         model = Health
         exclude = (
@@ -17,7 +20,7 @@ class HealthSerializer(serializers.ModelSerializer):
         owner = validated_data.get('owner', None)
         print('owner', owner.partner)
         if owner:
-          validated_data['partner'] = owner.partner
+            validated_data['partner'] = owner.partner
         health = Health(**validated_data)
         for key in validated_data:
             if validated_data[key] == TypeOfResponse.YES:
