@@ -32,24 +32,35 @@ class PartnerViewSet(viewsets.ModelViewSet):
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
+        print('create---*' * 20)
         data = request.data
         data['user'] = request.user.id
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'message': 'Creado correctamente.'},
+                            status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
+        data = request.data
         if self.get_queryset(pk):
+            dob = data.pop('dob', None)
+            if dob:
+                print(dob)
             serializer = self.serializer_class(self.get_queryset(pk),
                                                data=request.data)
 
+            print(request.data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response({'message': 'Actualizado correctamente.'},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
         return Response({'message': 'Partner no existe'},
-                        status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_404_NOT_FOUND)
 
     def destroy(self, request, pk=None):
         instance = self.get_queryset().filter(id=pk).first()

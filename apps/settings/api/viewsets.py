@@ -6,11 +6,12 @@ from apps.settings.api.serializers import (
     SettingSerializer, )
 
 from apps.users.permissions import IsOwnerOrAdminUser
+from apps.settings.models import Setting
 
 
 class SettingViewSet(viewsets.ModelViewSet):
     serializer_class = SettingSerializer
-    permission_classes = [IsAuthenticated, IsOwnerOrAdminUser]
+    permission_classes = [IsAuthenticated]
 
     def get_queryset(self, pk=None):
         if pk is None:
@@ -24,11 +25,16 @@ class SettingViewSet(viewsets.ModelViewSet):
         serializer = self.get_serializer(self.get_queryset(), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
+    def retrieve(self, request, pk=None):
+        setting = Setting.objects.filter(owner=request.user).first()
+        serializer = self.get_serializer(self.get_queryset(setting.id))
+        return Response(serializer.data, status=status.HTTP_200_OK)
+
     def create(self, request):
         data = request.data
         data['owner'] = request.user.id
         data['partner'] = request.user.partner
-        print(request.user)
+        print('User:', request.user)
         serializer = self.serializer_class(data=data)
         if serializer.is_valid():
             serializer.save()

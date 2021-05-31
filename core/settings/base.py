@@ -29,6 +29,9 @@ BASE_APPS = [
 LOCAL_APPS = [
     'apps.base',
     'apps.common',
+    'apps.organs',
+    'apps.work_types',
+    'apps.organic_units',
     'apps.settings',
     'apps.users',
     'apps.partners',
@@ -106,7 +109,9 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/3.1/topics/i18n/
 
-LANGUAGE_CODE = 'es-PE'
+DATE_INPUT_FORMATS = ('%d-%m-%Y', '%Y-%m-%d')
+
+LANGUAGE_CODE = 'es-GB'
 
 TIME_ZONE = 'America/Lima'
 
@@ -162,4 +167,3 @@ SIMPLE_JWT = {
     'SLIDING_TOKEN_LIFETIME': timedelta(minutes=5),
     'SLIDING_TOKEN_REFRESH_LIFETIME': timedelta(days=1),
 }
-

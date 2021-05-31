@@ -8,6 +8,9 @@ from rest_framework_simplejwt.views import (
     TokenRefreshView,
     TokenVerifyView,
 )
+from apps.partners.api.views.generics_api_viewsets import (OrganViewSet,
+                                                           OrganicUnitViewSet,
+                                                           WorkTypeViewSet)
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -50,6 +53,9 @@ urlpatterns = [
     path('api/userss/', include('apps.users.api.urls')),
     path('api/users/', include('apps.users.api.routers')),
     path('api/partners/', include('apps.partners.api.routers')),
+    path('api/organs/', include('apps.organs.api.routers')),
+    path('api/organic-units/', include('apps.organic_units.api.routers')),
+    path('api/work-types/', include('apps.work_types.api.routers')),
     path('api/healthss/', include('apps.healths.api.urls')),
     path('api/healths/', include('apps.healths.api.routers')),
     path('api/symptomss/', include('apps.symptoms.api.urls')),

@@ -8,11 +8,14 @@ class SettingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, instance):
+        print(instance.owner)
         return {
             "user": {
+                "role": instance.owner.groups.name,
                 "data": {
-                    'displayName': instance.owner.username,
-                    'email': instance.owner.email,
+                    'displayName':
+                    instance.owner.username if instance.owner else '',
+                    'email': instance.owner.email if instance.owner else '',
                     "photoURL": "assets/images/avatars/johndoe.png",
                     'settings': {
                         "layout": {
@@ -52,11 +55,11 @@ class SettingSerializer(serializers.ModelSerializer):
                             "toolbar": instance.theme_toolbar,
                             "footer": instance.theme_footer,
                         },
-                        "shortcuts": []
                     },
+                    "shortcuts": [],
                     "error": "",
                     "role": "admin",
-                    "uuid": instance.owner.id,
+                    "uuid": instance.owner.id if instance.owner else '',
                     "roles": ["admin"],
                     "partner": 1,
                 }

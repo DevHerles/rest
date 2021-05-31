@@ -5,6 +5,7 @@ from simple_history.models import HistoricalRecords
 
 from apps.partners.models import Partner
 from apps.base.models import BaseModel
+from apps.settings.models import Setting
 
 
 class UserManager(BaseUserManager):
@@ -43,7 +44,10 @@ class UserManager(BaseUserManager):
 
 
 class User(AbstractBaseUser, BaseModel, PermissionsMixin):
-    groups = models.ForeignKey(Group, on_delete=models.CASCADE)
+    groups = models.ForeignKey(Group,
+                               on_delete=models.CASCADE,
+                               blank=True,
+                               null=True)
     username = models.CharField(max_length=255, unique=True)
     email = models.EmailField(
         'Correo Electrónico',

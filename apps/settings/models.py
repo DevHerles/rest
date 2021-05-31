@@ -1,5 +1,4 @@
 from django.db import models
-from django.conf import settings
 from django.utils import timezone
 from apps.base.models import BaseModel
 
@@ -33,5 +32,5 @@ class Setting(BaseModel):
     class Meta:
         ordering = ('-created_at', )
 
-    def __str__(self):
-        return self.owner.name
+    # def __str__(self):
+    #     return self.owner.name if self.owner else 'Unknown'

@@ -15,8 +15,12 @@ class HealthViewSet(viewsets.ModelViewSet):
 
     def get_queryset(self, pk=None):
         if pk is None:
-            return self.get_serializer().Meta.model.objects.filter(
-                is_active=True)
+            if self.request.user.groups.name in ['admin', 'supervisor']:
+                return self.get_serializer().Meta.model.objects.filter(
+                    is_active=True)
+            else:
+                return self.get_serializer().Meta.model.objects.filter(
+                    is_active=True, owner=self.request.user)
         else:
             return self.get_serializer().Meta.model.objects.filter(
                 id=pk, is_active=True).first()
@@ -35,28 +39,34 @@ class HealthViewSet(viewsets.ModelViewSet):
         if write_serializer.is_valid():
             instance = write_serializer.save()
             read_serializer = self.serializer_class(instance)
-            return Response(read_serializer.data,
+            return Response({'message': 'Creado correctamente.'},
                             status=status.HTTP_201_CREATED)
         return Response(write_serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
+        data = request.data
         if self.get_queryset(pk):
-            serializer = self.serializer_class(self.get_queryset(pk),
-                                               data=request.data)
-
+            data['partner'] = request.user.partner.id
+            serializer = HealthCreateSerializer(self.get_queryset(pk),
+                                                data=request.data)
             if serializer.is_valid():
-                serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                instance = serializer.save()
+                read_serializer = self.serializer_class(instance)
+                return Response({'message': 'Actualizado correctamente.'},
+                                status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
         return Response({'message': 'DJ Salud no existe'},
-                        status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_404_NOT_FOUND)
 
     def destroy(self, request, pk=None):
         instance = self.get_queryset().filter(id=pk).first()
         if instance:
             instance.is_active = False
             instance.save()
-            return Response({'message': 'Eliminado correctamente'},
+            return Response({'message': 'Eliminado correctamente.'},
                             status=status.HTTP_200_OK)
         return Response({'message': 'DJ Salud no existe'},
-                        status=status.HTTP_400_BAD_REQUEST)
+                        status=status.HTTP_404_NOT_FOUND)
