@@ -11,7 +11,16 @@ class SymptomCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         symptom = Symptom(**validated_data)
-        print(validated_data)
+        for key in validated_data:
+            if validated_data[key] == TypeOfResponse.YES:
+                symptom.fit = False
+                break
+        symptom.save()
+        return symptom
+
+    def update(self, instance, validated_data):
+        symptom = super().update(instance, validated_data)
+        symptom.fit = True
         for key in validated_data:
             if validated_data[key] == TypeOfResponse.YES:
                 symptom.fit = False

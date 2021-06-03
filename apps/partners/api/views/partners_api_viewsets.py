@@ -44,14 +44,15 @@ class PartnerViewSet(viewsets.ModelViewSet):
 
     def update(self, request, pk=None):
         data = request.data
+        dob = data.pop('dob', None)
+        if dob:
+            dob = dob[:10]
+            data['dob'] = dob
+        print('UPDATE:' * 10, data)
         if self.get_queryset(pk):
-            dob = data.pop('dob', None)
-            if dob:
-                print(dob)
             serializer = self.serializer_class(self.get_queryset(pk),
                                                data=request.data)
 
-            print(request.data)
             if serializer.is_valid():
                 serializer.save()
                 return Response({'message': 'Actualizado correctamente.'},

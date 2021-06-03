@@ -11,6 +11,8 @@ from rest_framework_simplejwt.views import (
 from apps.partners.api.views.generics_api_viewsets import (OrganViewSet,
                                                            OrganicUnitViewSet,
                                                            WorkTypeViewSet)
+from apps.users.api.views import ChangePasswordView
+
 from drf_yasg.views import get_schema_view
 from drf_yasg import openapi
 
@@ -48,16 +50,15 @@ urlpatterns = [
     path('api-auth/', include('rest_framework.urls',
                               namespace='rest_framework')),
     path('admin/', admin.site.urls),
-    path('api/settingss/', include('apps.settings.api.urls')),
+    path('api/change-password/<int:pk>/',
+         ChangePasswordView.as_view(),
+         name='change_password'),
     path('api/settings/', include('apps.settings.api.routers')),
-    path('api/userss/', include('apps.users.api.urls')),
     path('api/users/', include('apps.users.api.routers')),
     path('api/partners/', include('apps.partners.api.routers')),
     path('api/organs/', include('apps.organs.api.routers')),
     path('api/organic-units/', include('apps.organic_units.api.routers')),
     path('api/work-types/', include('apps.work_types.api.routers')),
-    path('api/healthss/', include('apps.healths.api.urls')),
     path('api/healths/', include('apps.healths.api.routers')),
-    path('api/symptomss/', include('apps.symptoms.api.urls')),
     path('api/symptoms/', include('apps.symptoms.api.routes')),
 ]

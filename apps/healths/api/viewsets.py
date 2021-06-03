@@ -35,30 +35,44 @@ class HealthViewSet(viewsets.ModelViewSet):
         user = User.objects.filter(pk=request.user.id).first()
         data['owner'] = user.id
         data['partner'] = user.partner.id
+        health = self.get_serializer().Meta.model.objects.filter(
+            owner=user, is_active=True).first()
+        if health:
+            return Response(
+                {'message': 'Ya cuenta con una Declaración Jurada de Salud.'},
+                status=status.HTTP_400_BAD_REQUEST)
         write_serializer = HealthCreateSerializer(data=data)
         if write_serializer.is_valid():
             instance = write_serializer.save()
             read_serializer = self.serializer_class(instance)
-            return Response({'message': 'Creado correctamente.'},
-                            status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    'message':
+                    'Declaración Jurada de Salud creado correctamente.'
+                },
+                status=status.HTTP_201_CREATED)
         return Response(write_serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
         data = request.data
-        if self.get_queryset(pk):
-            data['partner'] = request.user.partner.id
+        instance = self.get_queryset(pk)
+        if instance:
+            data['partner'] = instance.partner.id
             serializer = HealthCreateSerializer(self.get_queryset(pk),
-                                                data=request.data)
+                                                data=data)
             if serializer.is_valid():
                 instance = serializer.save()
-                read_serializer = self.serializer_class(instance)
-                return Response({'message': 'Actualizado correctamente.'},
-                                status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        'message':
+                        'Declaración Jurada de Salud actualizado correctamente.'
+                    },
+                    status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
-        return Response({'message': 'DJ Salud no existe'},
+        return Response({'message': 'Declaración Jurada de Salud no existe'},
                         status=status.HTTP_404_NOT_FOUND)
 
     def destroy(self, request, pk=None):
@@ -66,7 +80,11 @@ class HealthViewSet(viewsets.ModelViewSet):
         if instance:
             instance.is_active = False
             instance.save()
-            return Response({'message': 'Eliminado correctamente.'},
-                            status=status.HTTP_200_OK)
-        return Response({'message': 'DJ Salud no existe'},
+            return Response(
+                {
+                    'message':
+                    'Declaración Jurada de Salud eliminado correctamente.'
+                },
+                status=status.HTTP_200_OK)
+        return Response({'message': 'Declaración Jurada de Salud no existe'},
                         status=status.HTTP_404_NOT_FOUND)

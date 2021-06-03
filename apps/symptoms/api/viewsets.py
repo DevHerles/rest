@@ -35,12 +35,17 @@ class SymptomViewSet(viewsets.ModelViewSet):
         data = request.data
         _id = data.pop('_id', None)
         user = User.objects.filter(pk=request.user.id).first()
-        health = Health.objects.filter(owner=user).first()
+        health = Health.objects.filter(owner=user, is_active=True).first()
+        print(health)
+        if not health:
+            return Response(
+                {'message': 'No cuenta con una Declaración Jurada de Salud.'},
+                status=status.HTTP_400_BAD_REQUEST)
         if not health.fit:
             return Response(
                 {
-                    'detail':
-                    'Su declaración jurada de salud no es apto. No puede continuar.'
+                    'message':
+                    'Su declaración Jurada de Salud no es apto. No puede continuar.'
                 },
                 status=status.HTTP_400_BAD_REQUEST)
         data['owner'] = user.id
@@ -49,33 +54,48 @@ class SymptomViewSet(viewsets.ModelViewSet):
         if write_serializer.is_valid():
             instance = write_serializer.save()
             read_serializer = self.serializer_class(instance)
-            return Response(read_serializer.data,
-                            status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    'message':
+                    'Declaración Jurada de Sintomatología creado correctamente.'
+                },
+                status=status.HTTP_201_CREATED)
         return Response(write_serializer.errors,
                         status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
         data = request.data
-        if self.get_queryset(pk):
-            data['partner'] = request.user.partner.id
+        instance = self.get_queryset(pk)
+        if instance:
+            data['partner'] = instance.partner.id
             serializer = SymptomCreateSerializer(self.get_queryset(pk),
-                                                 data=request.data)
+                                                 data=data)
             if serializer.is_valid():
                 instance = serializer.save()
-                read_serializer = self.serializer_class(instance)
-                return Response(read_serializer.data,
-                                status=status.HTTP_200_OK)
+                return Response(
+                    {
+                        'message':
+                        'Declaración Jurada de Sintomatología actualizado correctamente.'
+                    },
+                    status=status.HTTP_200_OK)
             else:
                 return Response(serializer.errors,
                                 status=status.HTTP_400_BAD_REQUEST)
-        return Response({'message': 'DJ de sintomatología no existe'},
-                        status=status.HTTP_404_NOT_FOUND)
+        return Response(
+            {'message': 'Declaración Jurada de Sintomatología no existe'},
+            status=status.HTTP_404_NOT_FOUND)
 
     def destroy(self, request, pk=None):
         instance = self.get_queryset().filter(id=pk).first()
         if instance:
             instance.is_active = False
             instance.save()
-            return Response(pk, status=status.HTTP_200_OK)
-        return Response({'message': 'DJ de Síntoma no existe'},
-                        status=status.HTTP_400_BAD_REQUEST)
+            return Response(
+                {
+                    'message':
+                    'Declaración Jurada de Sintomatología eliminado correctamente.'
+                },
+                status=status.HTTP_200_OK)
+        return Response(
+            {'message': 'Declaración Jurada de Sintomatología no existe'},
+            status=status.HTTP_400_BAD_REQUEST)

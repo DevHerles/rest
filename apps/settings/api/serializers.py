@@ -8,7 +8,6 @@ class SettingSerializer(serializers.ModelSerializer):
         fields = '__all__'
 
     def to_representation(self, instance):
-        print(instance.owner)
         return {
             "user": {
                 "role": instance.owner.groups.name,
@@ -58,9 +57,9 @@ class SettingSerializer(serializers.ModelSerializer):
                     },
                     "shortcuts": [],
                     "error": "",
-                    "role": "admin",
+                    "role": instance.owner.groups.name,
                     "uuid": instance.owner.id if instance.owner else '',
-                    "roles": ["admin"],
+                    "roles": [instance.owner.groups.name],
                     "partner": 1,
                 }
             }

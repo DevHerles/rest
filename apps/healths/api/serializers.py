@@ -16,10 +16,19 @@ class HealthCreateSerializer(serializers.ModelSerializer):
 
     def create(self, validated_data):
         owner = validated_data.get('owner', None)
-        print('owner', owner.partner)
         if owner:
             validated_data['partner'] = owner.partner
         health = Health(**validated_data)
+        for key in validated_data:
+            if validated_data[key] == TypeOfResponse.YES:
+                health.fit = False
+                break
+        health.save()
+        return health
+
+    def update(self, instance, validated_data):
+        health = super().update(instance, validated_data)
+        health.fit = True
         for key in validated_data:
             if validated_data[key] == TypeOfResponse.YES:
                 health.fit = False

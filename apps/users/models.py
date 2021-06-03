@@ -48,7 +48,7 @@ class User(AbstractBaseUser, BaseModel, PermissionsMixin):
                                on_delete=models.CASCADE,
                                blank=True,
                                null=True)
-    username = models.CharField(max_length=255, unique=True)
+    username = models.CharField('Nombre usuario', max_length=255, unique=True)
     email = models.EmailField(
         'Correo Electrónico',
         max_length=255,

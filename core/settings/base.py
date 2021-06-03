@@ -133,6 +133,7 @@ CORS_ORIGIN_WHITELIST = ["http://localhost:3000"]
 STATIC_URL = '/static/'
 
 REST_FRAMEWORK = {
+    "DATE_INPUT_FORMATS": ["%Y-%m-%d"],
     'DEFAULT_PERMISSION_CLASSES': [
         'rest_framework.permissions.AllowAny',
     ],

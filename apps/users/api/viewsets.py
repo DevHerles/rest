@@ -4,14 +4,16 @@ from rest_framework import viewsets
 from rest_framework.response import Response
 from rest_framework.permissions import (IsAdminUser, DjangoModelPermissions,
                                         AllowAny, IsAuthenticated)
-from apps.users.api.serializers import (
-    CustomUserSerializer as UserSerializer, )
+from apps.users.api.serializers import (CustomUserSerializer as UserSerializer,
+                                        UsersListSerializer,
+                                        UserUpdateSerializer)
 from apps.partners.models import Partner
 from apps.partners.api.serializers.partners_api_serializers import PartnerCreateSerializer
 from apps.settings.models import Setting
 from apps.users.permissions import (IsOwnerOrAdminUser, IsAdminUser,
                                     IsLoggedInUserOrSuperAdmin,
                                     IsAdminOrAnonymousUser)
+from django.contrib.auth.models import Group
 
 
 class UserViewSet(viewsets.ModelViewSet):
@@ -21,9 +23,9 @@ class UserViewSet(viewsets.ModelViewSet):
     def get_queryset(self, pk=None):
         if pk is None:
             if self.action == 'list':
-                if self.request.user.groups.name in ['admin', 'supervisor']:
+                if self.request.user.groups.name in ['admin', 'moderator']:
                     return self.get_serializer().Meta.model.objects.filter(
-                        is_active=True)
+                        is_active=True, is_superuser=False)
                 else:
                     return self.get_serializer().Meta.model.objects.filter(
                         is_active=True, owner=self.request.user)
@@ -32,20 +34,28 @@ class UserViewSet(viewsets.ModelViewSet):
                 return self.get_serializer().Meta.model.objects.filter(
                     id=pk, is_active=True).first()
             else:
-                return Response(status=status.HTTP_402_NOT_ALLOWED)
+                return Response(status=status.HTTP_400_BAD_REQUEST)
 
     def retrieve(self, request, pk=None):
         serializer = self.get_serializer(self.get_queryset(pk))
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def list(self, request):
-        print('request==' * 30, request.user)
-        serializer = self.get_serializer(self.get_queryset(), many=True)
+        serializer = UsersListSerializer(self.get_queryset(), many=True)
         return Response(serializer.data, status=status.HTTP_200_OK)
 
     def create(self, request):
         data = request.data
         data['owner'] = request.user
+        group_name = data.pop('role', 'user')
+        new_group, created = Group.objects.get_or_create(name=group_name)
+        print('new_group', new_group)
+        print('created', created)
+        data['groups'] = new_group.id if new_group else created.id
+        serializer = self.serializer_class(data=data)
+        if not serializer.is_valid():
+            return Response(serializer.errors,
+                            status=status.HTTP_400_BAD_REQUEST)
 
         partner_data = {
             'name': data.get('username', False),
@@ -60,28 +70,38 @@ class UserViewSet(viewsets.ModelViewSet):
             return Response(partner_serializer.errors,
                             status=status.HTTP_400_BAD_REQUEST)
 
-        print('partner===' * 20, partner)
         data['partner'] = partner.id
         serializer = self.serializer_class(data=data)
         print(serializer)
-        print('is_valid:', serializer.is_valid())
         if serializer.is_valid():
             serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
+            return Response({'message': 'Usuario creado correctamente.'},
+                            status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
     def update(self, request, pk=None):
+        data = request.data
+        group_name = data.pop('role', 'user')
+        password = data.pop('password', None)
+        new_group, created = Group.objects.get_or_create(name=group_name)
+        data['groups'] = new_group.id if new_group else created.id
+        print(data)
         if self.get_queryset(pk):
-            serializer = self.serializer_class(self.get_queryset(pk),
-                                               data=request.data)
+            serializer = UserUpdateSerializer(self.get_queryset(pk), data=data)
             if serializer.is_valid():
                 serializer.save()
-                return Response(serializer.data, status=status.HTTP_200_OK)
+                return Response(
+                    {'message': 'Usuario actualizado correctamente.'},
+                    status=status.HTTP_200_OK)
+            else:
+                return Response(serializer.errors,
+                                status=status.HTTP_400_BAD_REQUEST)
         return Response({'message': 'Usuario no existe'},
                         status=status.HTTP_400_BAD_REQUEST)
 
     def destroy(self, request, pk=None):
-        instance = self.get_queryset().filter(id=pk).first()
+        instance = self.get_queryset(pk)
+        print('instance====' * 10, instance)
         if instance:
             instance.is_active = False
             instance.save()
